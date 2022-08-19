@@ -1,89 +1,41 @@
-// 1. Відстежуй на формі подію input, і щоразу записуй у локальне сховище об'єкт з полями email і message, у яких зберігай поточні значення полів форми. Нехай ключем для сховища буде рядок "feedback-form-state".
 import throttle from 'lodash.throttle';
 
-const refs = {
-    form: document.querySelector('form'),
+const feedbackForm = document.querySelector('.feedback-form');
+const emailInput = document.querySelector('input');
+const messageInput = document.querySelector('textarea');
+
+// Track the input event on the form
+
+checkInputData();
+feedbackForm.addEventListener('input', throttle(enteredData, 500));
+feedbackForm.addEventListener('submit', submitData);
+
+// Writing to the local storage of the email and message fields, which store the current values of the form fields
+
+function enteredData() {
+  const input = {
+    email: emailInput.value,
+    message: messageInput.value,
+  };
+  localStorage.setItem('feedback-form-state', JSON.stringify(input));
 }
 
-const LOCAL_STORAGE = "feedback-form-state";
+// When the page loads, check the state of the repository. If there is saved data, then fill in the form fields with them
 
-refs.form.addEventListener('submit', onFormSubmit);
-refs.form.addEventListener('input', throttle(onFormIput, 500));
-
-initInput();
-
-function onFormIput(event) {
-    function onFormIput(event) {
-    let savedData = localStorage.getItem(LOCAL_STORAGE);
-    if (savedData) {
-        savedData = JSON.parse(savedData);
-    }else{
-    savedData = {}
-    }
-    savedData[event.target.name] = event.target.value;
-    localStorage.setItem(LOCAL_STORAGE, JSON.stringify(savedData));
-
-    console.log(savedData);
+function checkInputData() {
+  const returnedData = localStorage.getItem('feedback-form-state');
+  if (returnedData) {
+    emailInput.value = JSON.parse(returnedData).email;
+    messageInput.value = JSON.parse(returnedData).message;
+  }
 }
+
+// When submitting a form, clear the storage and form fields. Output an object with fields email, message and their current values to the console
+
+function submitData(e) {
+  e.preventDefault();
+  console.log(localStorage.getItem('feedback-form-state'));
+
+  localStorage.removeItem('feedback-form-state');
+  e.currentTarget.reset();
 }
-// 3. Під час сабміту форми очищуй сховище і поля форми, а також виводь у консоль об'єкт з полями email, message та їхніми поточними значеннями
-function onFormSubmit(event) {
-    event.preventDefault();
-    event.currentTarget.reset();
-    localStorage.removeItem(LOCAL_STORAGE);
-}
-// 2. Під час завантаження сторінки перевіряй стан сховища, і якщо там є збережені дані, заповнюй ними поля форми. В іншому випадку поля повинні бути порожніми.
-
-function initInput() {
-    let savedData = localStorage.getItem(LOCAL_STORAGE);
-    if (savedData) {
-        savedData = JSON.parse(savedData);
-    }
-    Object.entries(savedData).forEach(([name, value]) => {
-    refs.form.elements[name].value = value;
-    
-    
-    console.log(savedData.email);
-    console.log(savedData.message);
-    console.log(refs.form.email.value);
-    console.log(refs.form.message.value);
-    console.log(refs.form);
-    }) 
- }
-
-
-
-// const refs = {
-//     form: document.querySelector('.feedback-form'),
-//     textarea: document.querySelector('textarea'),
-// }
-// const KEY = 'feedback';
-// populateTextarea();
-
-
-// refs.form.addEventListener('submit', onFormSubmit);
-// refs.textarea.addEventListener('input', throttle(onTextareaInput, 1000));
-
-// function onFormSubmit(e) {
-//     e.preventDefault();
-//     e.currentTarget.reset();
-//     localStorage.removeItem(KEY);
-
-// }
-
-// function onTextareaInput(e) {
-//     const message = e.currentTarget.value;
-//     localStorage.setItem(KEY, message);
-// }
-
-// function populateTextarea() {
-//     const savedMessage = localStorage.getItem(KEY);
-
-//     if (savedMessage) { 
-//         refs.textarea.value = savedMessage;
-//     }
-// }
-
-
-
-

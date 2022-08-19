@@ -1,37 +1,17 @@
-import throttle from 'lodash.throttle';
 import Player from '@vimeo/player';
+import throttle from 'lodash.throttle';
 
-// 1. Ознайомся з документацією бібліотеки Vimeo плеєра. Додай бібліотеку як залежність проекту через npm. Ініціалізуй плеєр у файлі скрипта як це описано в секції pre-existing player, але враховуй, що у тебе плеєр доданий як npm пакет, а не через CDN. 
-const iframe = document.querySelector('#vimeo-player');
+const iframe = document.querySelector('iframe');
 const player = new Player(iframe);
-const KEY = "videoplayer-current-time";
 
+// Trace timeupdate and Save playback time to local storage
 
-// 2. Вивчи документацію методу on() і почни відстежувати подію timeupdate - оновлення часу відтворення. Додай до проекту бібілотеку lodash.throttle і зроби так, щоб час відтворення оновлювався у сховищі не частіше, ніж раз на секунду.
-player.on('timeupdate', throttle(onPlay, 1000));
+player.on('timeupdate', throttle(onPlay, 500));
 
+function onPlay(data) {
+  localStorage.setItem('videoplayer-current-time', data.seconds);
+}
 
-// 3.Зберігай час відтворення у локальне сховище. Нехай ключем для сховища буде рядок "videoplayer-current-time".
-const onPlay = function (data) {
-    localStorage.setItem(KEY, JSON.stringify(data));
-};
+// Renewal playback from the saved position
 
-
-// 4. Під час перезавантаження сторінки скористайся методом setCurrentTime() з метою відновлення відтворення зі збереженої позиції.
-const savedData = localStorage.getItem(KEY);
-    if (savedData) {
-        player.setCurrentTime(JSON.parse(savedData).seconds);
-    } 
-
-
-
-
-
-
-
-
-
-
-
-
-
+player.setCurrentTime(localStorage.getItem('videoplayer-current-time') || 0);

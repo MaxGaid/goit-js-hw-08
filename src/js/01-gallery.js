@@ -1,48 +1,33 @@
-// Add imports above this line
-import SimpleLightbox from "simplelightbox";
-import "simplelightbox/dist/simple-lightbox.min.css"
-import { galleryItems } from './gallery-items';
+import { galleryItems } from './gallery-items.js';
 // Change code below this line
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
+console.log(galleryItems);
 
-// Change code below this line
-const imgs = galleryItems
-    .map(galleryItem => {
-        const itemEl = `<a class="gallery__item" href="${galleryItem.original}">
-  <img class="gallery__image" src="${galleryItem.preview}" alt="${galleryItem.description}" /></a>` 
-        return itemEl;
+const gallery = document.querySelector('.gallery');
+
+// Create markup
+
+function createGalleryMarkup(items) {
+  return items
+    .map(item => {
+      return `
+      <a class="gallery__item" href="${item.original}">
+        <img class="gallery__image" src="${item.preview}" alt="${item.description}" />
+      </a>
+    `;
     })
-    .join(" ");
+    .join('');
+}
 
-const listEl = document.querySelector(".gallery");
-listEl.insertAdjacentHTML('afterbegin', imgs);
+// Add markup in DOM
 
-const galleryContainer = document.querySelector(".gallery");
-galleryContainer.addEventListener('click', onImageClick);
+gallery.innerHTML = createGalleryMarkup(galleryItems);
 
-const lightbox = new SimpleLightbox('.gallery a', {
-    captionsData: 'alt',
-    captionPosition: 250,
+// SimpleLightbox
 
-})
-
-// function onImageClick(event) {
-//     event.preventDefault();
-//     if (!event.target.classList.contains("gallery__image"))
-//         return;
-// }
-
-
-
-// galleryContainer.addEventListener('keydown', onEscPress)
-// function onEscPress(event) {
-//     if (event.code === 'Escape') {
-//         instance.close()
-//     }
-// }
-    
-
-
-
-
-
+new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});
